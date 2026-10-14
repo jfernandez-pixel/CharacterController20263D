@@ -26,10 +26,15 @@ public class PlayerController : MonoBehaviour
     //Variable camara 3ra persona
     private Transform _cameraTransform;
 
+    //Variables animacion
+    private Animator _animator;
+
 
     void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _animator = GetComponentInChildren<Animator>();
+
         _moveAction = InputSystem.actions["Move"];
         _jumpAction = InputSystem.actions["Jump"];
         _aimAction = InputSystem.actions["Aim"];
@@ -53,6 +58,8 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
+
+        _animator.SetBool("IsJumping", !IsGrounded());
         
         if (_aimAction.IsPressed()) //Movimiento de apuntado tipo shooter Fortnite
         {
@@ -86,12 +93,16 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 direction = new Vector3(_moveInput.x, 0, _moveInput.y); //Ejecuta el codigo cuando pulsas alguna tecla de movimiento
 
+        _animator.SetFloat("Vertical", direction.magnitude, 0.2f, Time.deltaTime);
+        _animator.SetFloat("Horizontal", 0);
+        
+
         if(direction != Vector3.zero)
         {
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y; 
         float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, _smoothTime); 
 
-        transform.rotation = Quaternion.Euler(0, targetAngle, 0);
+        transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
 
         Vector3 moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
 
@@ -103,10 +114,13 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 direction = new Vector3(_moveInput.x, 0, _moveInput.y); //Ejecuta el codigo cuando pulsas alguna tecla de movimiento
 
+        _animator.SetFloat("Horizontal", _moveInput.x, 0.2f, Time.deltaTime);
+        _animator.SetFloat("Vertical", _moveInput.y, 0.2f, Time.deltaTime);
+
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y; 
         float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _cameraTransform.eulerAngles.y, ref _turnSmoothVelocity, _smoothTime); 
 
-        transform.rotation = Quaternion.Euler(0, targetAngle, 0);
+        transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
 
         if(direction != Vector3.zero)
         {

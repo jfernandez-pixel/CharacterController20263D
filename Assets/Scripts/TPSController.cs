@@ -25,8 +25,10 @@ public class TPSController : MonoBehaviour
     private Transform _cameraTransform;
     [SerializeField]private Transform _lookAtCamera;
     private float _xRotation;
+    [SerializeField]private GameObject _normalCamera;
+    [SerializeField]private GameObject _aimCamera;
 
-    //SVariable snsibilidad raton
+    //Variable snsibilidad raton
     [SerializeField]private float _cameraSensitivity = 10;
 
     
@@ -61,6 +63,17 @@ public class TPSController : MonoBehaviour
         }
 
         TPSMovement();
+
+        if(_aimAction.WasPressedThisFrame())
+        {
+            _normalCamera.SetActive(false);
+            _aimCamera.SetActive(true);
+        }
+        else if(_aimAction.WasReleasedThisFrame())
+        {
+            _normalCamera.SetActive(true);
+            _aimCamera.SetActive(false);
+        }
     
     }
     
