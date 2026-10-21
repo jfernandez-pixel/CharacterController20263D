@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private InputAction _jumpAction;
     [SerializeField]private float _movementSpeed = 10;
     [SerializeField]private float _jumpHeight = 2;
+    [SerializeField]private float _pushForce = 7;
+
 
 
     //Variables grio camara
@@ -28,6 +30,11 @@ public class PlayerController : MonoBehaviour
 
     //Variables animacion
     private Animator _animator;
+
+    //Variables para hacer mover las cajas cogiendolas
+    private GameObject _grabbedObject;
+    [SerializeField]private Transform _handsTransform;
+    [SerializeField]private float _handsRadius = 1;
 
 
     void Awake()
@@ -147,11 +154,31 @@ public class PlayerController : MonoBehaviour
         _playerGravity.y = Mathf.Sqrt(_jumpHeight * -2 * _gravitiy);
 
     }
+    void OnControllerColliderHit(ControllerColliderHit hit)// Funcion para golpear la caja y moverla
+    {
+        if(hit.gameObject.CompareTag("Empujable"))
+        {
+            Rigidbody _rbody = hit.gameObject.GetComponent<Rigidbody>();
 
+            Vector3 pushDirection = hit.moveDirection;
+            pushDirection.y = 0;
+
+            //_rbody.AddForce(pushDirection * _pushForce);
+            _rbody.linearVelocity = pushDirection * _pushForce / _rbody.mass;
+        }
+    }
     bool IsGrounded() // Funcion para detectar el suelo
     {
         return Physics.CheckSphere(_sensorTransforms.position, _sensorRadius, _groundLayer);
     }
+
+    /*void GrabObject()
+    {
+        if(_grabbedObject == null)
+        {
+            Collider[] objectsToGrab = Physics
+        }
+    }*/
 
     void OnDrawGizmos()
     {
